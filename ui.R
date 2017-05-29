@@ -48,8 +48,8 @@ shinyUI(pageWithSidebar(
 #                    ),
         checkboxInput("Near", h3("Only include if 3 patterns are each 10aa apart"), FALSE),
 
-#        checkboxInput("Clus", h3("Filter on the clusters"), FALSE),
-#        uiOutput("UIclust"),
+        checkboxInput("Clus", h3("Filter on the clusters"), FALSE),
+        uiOutput("UIclust"),
                                         #        checkboxGroupInput("Group", label = h3("Select a cluster: prefiltered by max 10aa between 3 patterns"),
  #                          choices=levels(tab$Cluster),
  #                          selected=1
