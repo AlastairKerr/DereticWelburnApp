@@ -1,29 +1,34 @@
-#library(shiny)
+library(shiny)
 
 shinyUI(pageWithSidebar(
-#    headerPanel("BROKEN: IN DEVELOPMENT"),
     headerPanel("Genes with fuzzpro matches"),
     
     sidebarPanel(
-#        selectInput("dset", label = h3("Dataset To Show"),
-#                    choices  = "Human_Chicken_Zebrafish",
-#                    selected = "Human_Chicken_Zebrafish"
-#                    ),
-        wellPanel(h3("Disordered Regions"),
-                  uiOutput("Hdis"),
-                  uiOutput("Gdis"),
-                  uiOutput("Ddis")
+        wellPanel(h2("iuphred disordered Regions"),
+                  checkboxInput("disReg", h3("Filter on %disorder"), FALSE),    
+                  conditionalPanel(
+                      condition = "input.disReg",
+                      uiOutput("Hdis"),
+                      uiOutput("Gdis"),
+                      uiOutput("Ddis")
+                  )
                   ),
-        wellPanel(h3("Patterns per region"),
-                  uiOutput("UI1a"),
-                  uiOutput("UI1b"),
-                  uiOutput("UI2a"),
-                  uiOutput("UI2b"),
-                  uiOutput("UI3a"),
-                  uiOutput("UI3b")
+        wellPanel(h2("Patterns per region"),
+                  checkboxInput("patReg", h3("Show / hide filters"), FALSE),
+                  conditionalPanel(
+                      condition = "input.patReg",                      
+                      uiOutput("UI1a"),
+                      uiOutput("UI1b"),
+                      uiOutput("UI2a"),
+                      uiOutput("UI2b"),
+                      uiOutput("UI3a"),
+                      uiOutput("UI3b")
+                     ) 
                   ),
+        
         wellPanel(#h3("Mitotis RNAseq from Reactome"),
-        h3(a(href="http://www.reactome.org/PathwayBrowser/#/R-HSA-69278&PATH=R-HSA-1640170&DTAB=EX", "Reactome mitosis genes")),
+            checkboxInput("showGO", h3("Omit GO terms from the table?"), TRUE),
+            h2(a(href="http://www.reactome.org/PathwayBrowser/#/R-HSA-69278&PATH=R-HSA-1640170&DTAB=EX", "Reactome mitosis genes")),
                   uiOutput("UImito"),
                   uiOutput("UImitoVal")                  
                   ),                 
@@ -43,17 +48,20 @@ shinyUI(pageWithSidebar(
                         "Negative regulation of mitosis [GO:004539]"  = "NRegMito"
                                 )
                     ),
-#        sliderInput("Sites", "Min number of sites per protein",
-#                    min=3, max=30, value=3                   
-#                    ),
-        checkboxInput("Near", h3("Only include if 3 patterns are each 10aa apart"), FALSE),
 
-        checkboxInput("Clus", h3("Filter on the clusters"), FALSE),
-        uiOutput("UIclust"),
-                                        #        checkboxGroupInput("Group", label = h3("Select a cluster: prefiltered by max 10aa between 3 patterns"),
- #                          choices=levels(tab$Cluster),
- #                          selected=1
- #                          ),
+
+        
+        
+        wellPanel(h2("Percent Similarity to an Ortholog"), 
+            checkboxInput("ident", h3("Filter on the %similarity to orthlog"), FALSE),    
+    conditionalPanel(
+        condition = "input.ident",
+        sliderInput("GgId", "Min %identity to Chicken",
+                    min=30, max=100, value=30),
+        sliderInput("DrId", "Min %identity to ZebraFish",
+                    min=30, max=100, value=30)
+    )),        
+
         wellPanel(p(strong("Download Table")),
                   downloadButton('downloadData', 'Download')
                   )

@@ -1,103 +1,94 @@
 library(dplyr)
-library(magrittr)
-
-
+load("mainTable.Rdata")
 mito <- read.table('mitosis.tsv', header=TRUE, sep="\t")
+ch <-read.table('hs.count')
+cg <-read.table('gg.count')
+cd <-read.table('dr.count')
 
-tab <-read.table('region-table.tsv', sep="\t", fill=T, header=T)
-tab$Cluster = as.factor(tab$Cluster)
+ch$V2 <- as.factor(ch$V2)
+cg$V2 <- as.factor(cg$V2)
+cd$V2 <- as.factor(cd$V2)
 
 shinyServer(function(input, output){
 
     output$Hdis <- renderUI({
         sliderInput("h_pcdis",
-                    h3("Human:Min percentage of disorder in region"),
-                    min = 1, max = 100, value= 0
+                    "Human:Min percentage of disorder in region",
+                    min = 0, max = 100, value= 0
                     )           
     })
     
     output$Gdis <- renderUI({
         sliderInput("g_pcdis",
-                    h3("Chicken:Min percentage of disorder in region"),
-                    min = 1, max = 100, value= 0
+                    "Chicken:Min percentage of disorder in region",
+                    min = 0, max = 100, value= 0
                     )           
     })
     
     output$Ddis <- renderUI({
         sliderInput("d_pcdis",
-                    h3("Zebrafish:Min percentage of disorder in region"),
-                    min = 1, max = 100, value= 0
+                    "Zebrafish:Min percentage of disorder in region",
+                    min = 0, max = 100, value= 0
                     )           
     })
     
     output$UI1a <- renderUI({
         selectInput("h_length",
-                    label = h3("Human:Length of region to examine"),
+                    label = "Human:Length of region to examine",
                     choices  = c(FALSE, 20,50,100,300),
                     selected = 300
                     )
     })
     output$UI1b <- renderUI({
         sliderInput("h_min",
-                    h3("Human:Min number of patterns"),
-                    min = 1, max = 10, value= 1
+                    "Human:Min number of patterns",
+                    min = 1, max = 10, value= 3
                     )
     })
     output$UI2a <- renderUI({
         selectInput("g_length",
                     label = h3("Chicken:Length of region to examine"),
-                   choices  = c(FALSE, 20,50,100,300),
+                    choices  = c(FALSE, 20,50,100,300),
                     selected = 300
                     )        
     })
     output$UI2b <- renderUI({
         sliderInput("g_min",
-                    h3("Chicken:Min number of patterns"),
+                    "Chicken:Min number of patterns",
                     min = 1, max = 10, value= 3
                     )
     })
     output$UI3a <- renderUI({
         selectInput("d_length",
-                    label = h3("Zebrafish:Length of region to examine"),
+                    "Zebrafish:Length of region to examine",
                     choices  = c(FALSE,20,50,100,300),
                     selected = 300
                     )       
     })
     output$UI3b <- renderUI({
         sliderInput("d_min",
-                    h3("Zebrafish:Min number of patterns"),
+                    "Zebrafish:Min number of patterns",
                     min = 1, max = 10, value= 3
                     )
     })
     
     output$UImito <- renderUI({        
         selectInput("mito",
-                    h3("Select All, or a tissue and min value"),
+                    "Select All, or a tissue and min value",
                         c("No", "All",
                           names(mito)[!grepl("Gene", names(mito))]
                           ),
                     selected = "No"
                     )
     })
-    output$UIclust <- renderUI({
-        if(input$Clus){
-            checkboxGroupInput("Group",
-                               label =
-                                   h3("Select a cluster: prefiltered by max 10aa between 3 patterns"),
-                               choices=levels(tab$Cluster),
-                               selected=1
-                               )
-        }else{
-            return()
-        }
-    })
+
     
     output$UImitoVal <- renderUI({
         if(input$mito == "No" | input$mito == "All"){
             return()
         }else{
             sliderInput("mitoVal",
-                        h3("Min value"),
+                        "Min value",
                         min = 1, max = 10, value= 1
                         )
         }
@@ -118,10 +109,6 @@ shinyServer(function(input, output){
         ccg <- subset(cg,
                       cg$V2 == input$g_length &
                       cg$V3 >= input$g_min)
-                                        #        ccg <- cg %>%
-#            subset(cg$V2 == input$g_length) %>%
-#            subset(cg$V3 >= input$g_min)
-#        ccg$V1
         ccg[,c(1,3)];
     })
 
@@ -129,22 +116,18 @@ shinyServer(function(input, output){
         ccd <- subset(cd,
                       cd$V2 == input$d_length & 
                       cd$V3 >= input$d_min)
-
-                                        #        ccd <- cd %>%
-#            subset(cd$V2 == input$d_length) %>%
-#            subset(cd$V3 >= input$d_min)
-        #ccd$V1
         ccd[,c(1,3)];
     })
 
     
     filter_table  <- reactive({
-        ft <- tab
+        ft <- mainTable
 
-        ft <- subset(ft,  H_pc_Disorder >= input$h_pcdis) 
-        ft <- subset(ft,  G_pc_Disorder >= input$g_pcdis) 
-        ft <- subset(ft,  D_pc_Disorder >= input$d_pcdis) 
-        
+        if(input$disReg){
+            ft <- subset(ft,  H_pc_Disorder >= input$h_pcdis) 
+            ft <- subset(ft,  G_pc_Disorder >= input$g_pcdis) 
+            ft <- subset(ft,  D_pc_Disorder >= input$d_pcdis) 
+        }        
         if(input$mito != "No"){
             if(input$mito == "All"){
                 ft <- merge(ft, mito, by.x ="GID",  by.y="Gene.ID")##
@@ -154,6 +137,7 @@ shinyServer(function(input, output){
             }
                             
         }
+        
         if(input$d_length > 0){
             dc <- count_d()
             names(dc) <- c("PID3","Dr.count")
@@ -175,13 +159,6 @@ shinyServer(function(input, output){
                                         #            ft <- subset(ft, ft$PID1 %in% count_h())
         }
 
-        if(input$Near){ ft <- subset(ft, ft$Cluster != "NA")}    
-
-        if(input$Clus){
-            ft <- subset(ft, ft$Cluster != "NA")
-            ft <- ft[ft$Cluster == input$Group,]
-        }
-
         
         if(input$GOterm == "mito"){            
            ft <- subset(ft, grepl("GO:0007067", ft$GOterms))
@@ -197,21 +174,20 @@ shinyServer(function(input, output){
         if(input$GOterm == "RegAna"){      ft <- subset(ft, grepl("GO:0090007", ft$GOterms)) }
         if(input$GOterm == "PRegMito"){    ft <- subset(ft, grepl("GO:0045840", ft$GOterms)) }
         if(input$GOterm == "NRegMito"){    ft <- subset(ft, grepl("GO:0045839", ft$GOterms)) }
-
-
-
-        
-#        ft<- subset(ft, input$Sites <= ft$Matches1)
-#        ft<- subset(ft, input$Sites <= ft$Matches2)
-#        ft<- subset(ft, input$Sites <= ft$Matches3)
+        if(input$ident){
+        ft <- subset(ft, input$GgId     <= ft$percentGg)
+            ft <- subset(ft, input$DrId <= ft$percentDr)
+        }
+        if(input$showGO){ ft <- ft %>% select(-GOterms) } 
         ft
+
     })
     
     
        
     output$mytable1 = renderDataTable({        
         ft<-filter_table()
-        ft
+        ft        
     },
         options = list(bSortClasses = TRUE, aLengthMenu = c(5,20,100,200),iDisplayLength = 20)
                                       )
