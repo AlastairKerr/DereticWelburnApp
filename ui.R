@@ -42,10 +42,12 @@ shinyUI(pageWithSidebar(
                         "Regulation of mitotic cell cycle [GO:0007346]" = "RegCell",
                         "Regulation of mitosis [GO:0007088]" = "RegMito",
                         "Regulation of mitotic prometaphase [GO:0035415]" = "RegPro",
-                    "Regulation of mitotic metaphase/anaphase transition [GO:0030071]" = "RegMAna",
+                        "Regulation of mitotic metaphase/anaphase transition [GO:0030071]" = "RegMAna",
                         "Regulation of mitotic anaphase [GO:0090007]" = "RegAna",
                         "Positive regulation of mitosis [GO:0045840]" = "PRegMito", 
-                        "Negative regulation of mitosis [GO:004539]"  = "NRegMito"
+                        "Negative regulation of mitosis [GO:004539]"  = "NRegMito",
+                        "Condensed chromosome kinetochore [GO:0000777]" ="cckin",
+                        "Spindle Pole [GO:0000922]" =  "SpindlePole"
                                 )
                     ),
 

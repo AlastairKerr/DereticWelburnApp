@@ -159,11 +159,7 @@ shinyServer(function(input, output){
                                         #            ft <- subset(ft, ft$PID1 %in% count_h())
         }
 
-        
-        if(input$GOterm == "mito"){            
-           ft <- subset(ft, grepl("GO:0007067", ft$GOterms))
-        }
-        
+        if(input$GOterm == "mito"){          ft <- subset(ft, grepl("GO:0007067", ft$GOterms)) }        
         if(input$GOterm == "centrosome"){  ft <- subset(ft, grepl("GO:0005813", ft$GOterms)) }
         if(input$GOterm == "microtubule"){ ft <- subset(ft, grepl("GO:0005874", ft$GOterms)) }
         if(input$GOterm == "cyc")        { ft <- subset(ft, grepl("GO:0000278", ft$GOterms)) }
@@ -174,6 +170,8 @@ shinyServer(function(input, output){
         if(input$GOterm == "RegAna"){      ft <- subset(ft, grepl("GO:0090007", ft$GOterms)) }
         if(input$GOterm == "PRegMito"){    ft <- subset(ft, grepl("GO:0045840", ft$GOterms)) }
         if(input$GOterm == "NRegMito"){    ft <- subset(ft, grepl("GO:0045839", ft$GOterms)) }
+        if(input$GOterm == "SpindlePole"){    ft <- subset(ft, grepl("GO:0000922", ft$GOterms)) }
+        if(input$GOterm == "cckin"){    ft <- subset(ft, grepl("GO:0000777", ft$GOterms)) }
         if(input$ident){
         ft <- subset(ft, input$GgId     <= ft$percentGg)
             ft <- subset(ft, input$DrId <= ft$percentDr)
