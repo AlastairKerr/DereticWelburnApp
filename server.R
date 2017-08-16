@@ -1,5 +1,7 @@
 library(dplyr)
+
 load("mainTable.Rdata")
+
 mito <- read.table('mitosis.tsv', header=TRUE, sep="\t")
 ch <-read.table('hs.count')
 cg <-read.table('gg.count')
@@ -8,6 +10,8 @@ cd <-read.table('dr.count')
 ch$V2 <- as.factor(ch$V2)
 cg$V2 <- as.factor(cg$V2)
 cd$V2 <- as.factor(cd$V2)
+
+
 
 shinyServer(function(input, output){
 
@@ -172,6 +176,23 @@ shinyServer(function(input, output){
         if(input$GOterm == "NRegMito"){    ft <- subset(ft, grepl("GO:0045839", ft$GOterms)) }
         if(input$GOterm == "SpindlePole"){    ft <- subset(ft, grepl("GO:0000922", ft$GOterms)) }
         if(input$GOterm == "cckin"){    ft <- subset(ft, grepl("GO:0000777", ft$GOterms)) }
+        if(input$GOterm == "Spindle"){    ft <- subset(ft, grepl("GO:0005819", ft$GOterms)) }
+        if(input$GOterm == "MitoticSpindle"){    ft <- subset(ft, grepl("GO:0072686", ft$GOterms)) }
+        if(input$GOterm == "MSA"){    ft <- subset(ft, grepl("GO:0090307", ft$GOterms)) }
+        if(input$GOterm == "MSO"){    ft <- subset(ft, grepl("GO:0007052", ft$GOterms)) }
+        if(input$GOterm == "KinetochoreMicrotubule"){    ft <- subset(ft, grepl("GO:0005828", ft$GOterms)) }
+        if(input$GOterm == "Kinetochore"){    ft <- subset(ft, grepl("GO:0000776", ft$GOterms)) }
+        if(input$GOterm == "KinetochoreBinding"){    ft <- subset(ft, grepl("GO:0043515", ft$GOterms)) }
+        if(input$GOterm == "RegAMS2K"){    ft <- subset(ft, grepl("GO:1902423", ft$GOterms)) }
+        if(input$GOterm == "MetaPlateCong"){    ft <- subset(ft, grepl("GO:0051310", ft$GOterms)) }
+        if(input$GOterm == "Centriole"){    ft <- subset(ft, grepl("GO:0005814", ft$GOterms)) }
+        if(input$GOterm == "CellDivision"){    ft <- subset(ft, grepl("GO:0051301", ft$GOterms)) }
+        if(input$GOterm == "Cytokinesis"){    ft <- subset(ft, grepl("GO:0000910", ft$GOterms)) }
+        if(input$GOterm == "Midbody"){    ft <- subset(ft, grepl("GO:0030496", ft$GOterms)) }
+        if(input$GOterm == "SpindleMidzone"){    ft <- subset(ft, grepl("GO:0051233", ft$GOterms)) }
+        
+
+
         if(input$ident){
         ft <- subset(ft, input$GgId     <= ft$percentGg)
             ft <- subset(ft, input$DrId <= ft$percentDr)
@@ -181,7 +202,42 @@ shinyServer(function(input, output){
 
     })
     
-    
+    output$docs = renderTable({
+        data.frame(
+            Column=c("PID1", "PID2", "PID3",
+                     "Hs.count", "Gg.count", "Dr.count",
+                     "Name", "GID" ,"Matches1", "Matches2", "Matches3",
+                     "alignPosition", "percentGg", "percentDr",
+                     "H_Count", "H_pos" ,"H_Count_Disorder", "H_pc_Disorder", 
+                     "G_Count", "G_pos" ,"G_Count_Disorder", "G_pc_Disorder", 
+                     "D_Count", "D_pos" ,"D_Count_Disorder", "D_pc_Disorder"
+                     
+                     ),
+            Description=c("Human Ensembl id", "Chicken Ensembl id", "Zebrafish Ensembl id",
+                          "Number of pattern hits per region to human protein",
+                          "Number of pattern hits per region to chicken protein",
+                          "Number of pattern hits per region to zebrafish protein",
+                          "Gene name", "Human Gene Ensembl id",
+                          "Total number of pattern hits to the human protein",
+                          "Total number of pattern hits to the chicken protein",
+                          "Total number of pattern hits to the zebrafish protein",
+                          "Position of best aligned pattern containing region in human protein",
+                          "Percentage identity of the best aligned region to chicken protein",
+                          "Percentage identity of the best aligned region to zebrafish protein", 
+                          "Number of patterns within 300aa used for disorder prediction in human",
+                          "Position of these pattern hits in human protein",
+                          "Number of amino acids with disorder in human region",
+                          "Percentage disorder in human region",
+                          "Number of patterns within 300aa used for disorder prediction in chicken",
+                          "Position of these pattern hits in chicken protein",
+                          "Number of amino acids with disorder in chicken region",
+                          "Percentage disorder in chicken region",
+                          "Number of patterns within 300aa used for disorder prediction in zebrafish",
+                          "Position of these pattern hits in zebrafish protein",
+                          "Number of amino acids with disorder in zebrafish region",
+                          "Percentage disorder in zebrafish region"
+                         ))
+    })
        
     output$mytable1 = renderDataTable({        
         ft<-filter_table()
@@ -198,8 +254,4 @@ shinyServer(function(input, output){
         }
     )
 
-}) 
-
-
-
-
+})

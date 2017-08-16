@@ -1,7 +1,8 @@
+
 library(shiny)
 
 shinyUI(pageWithSidebar(
-    headerPanel("Genes with fuzzpro matches"),
+    headerPanel("Proteins with fuzzpro matches"),
     
     sidebarPanel(
         wellPanel(h2("iuphred disordered Regions"),
@@ -47,7 +48,22 @@ shinyUI(pageWithSidebar(
                         "Positive regulation of mitosis [GO:0045840]" = "PRegMito", 
                         "Negative regulation of mitosis [GO:004539]"  = "NRegMito",
                         "Condensed chromosome kinetochore [GO:0000777]" ="cckin",
-                        "Spindle Pole [GO:0000922]" =  "SpindlePole"
+                        "Spindle Pole [GO:0000922]" =  "SpindlePole",
+                        "Spindle [GO:0005819]" = "Spindle",                        
+                        "Mitotic Spindle [GO:0072686]" = "MitoticSpindle",
+                        "Mitotic spindle assembly [GO:0090307]" = "MSA",
+                        "Mitotic spindle organization [GO:0007052]" = "MSO",
+                        "Kinetochore microtubule [GO:0005828]" = "KinetochoreMicrotubule",
+                        "Kinetochore [GO:0000776]" = "Kinetochore",
+                        "kinetochore binding [GO:0043515]" = "KinetochoreBinding",
+                        "Regulation of attachment of mitotic spindle microtubules to kinetochore [GO:1902423]"  = "RegAMS2K",
+                        "Metaphase plate congression [GO:0051310]" = "MetaPlateCong",
+                        "Centriole [GO:0005814]" = "Centriole",
+                        "Cell division [GO:0051301]" = "CellDivision",
+                        "Cytokinesis [GO:0000910]"= "Cytokinesis",
+                        "Cilum [GO:0005929]" = "Cilum",
+                        "Midbody [GO:0030496]" = "Midbody",
+                        "Spindle midzone [GO:0051233]" = "SpindleMidzone"                        
                                 )
                     ),
 
@@ -69,7 +85,11 @@ shinyUI(pageWithSidebar(
                   )
     ),
     mainPanel(
-        dataTableOutput("mytable1")
+        tabsetPanel(
+            tabPanel(h1("Table"), dataTableOutput("mytable1")),
+            tabPanel(h1("Documentation"), tableOutput("docs")),
+            tabPanel(h1("Methods"),includeMarkdown("Methods.md") )
+        )
     )   
 
 ))
