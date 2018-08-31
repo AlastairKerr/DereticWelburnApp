@@ -7,3 +7,6 @@ To run the app on the R command line
 install.packages("shiny") 
 shiny::runGitHub("DereticWelburnApp", "AlastairKerr")
 ```
+
+Scripts used to process the data for the app can be found here: 
+https://github.com/AlastairKerr/DereticWelburnPreprocessingScripts
